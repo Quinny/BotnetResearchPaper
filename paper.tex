@@ -39,9 +39,13 @@
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage[none]{hyphenat}
 \usepackage{hyperref}
-\setlength{\parindent}{0pt}
 \usepackage{caption}
+
+\setlength{\parindent}{0pt}
 \frenchspacing
+
+\newcommand{\quotes}[1]{``#1''}
+\newcommand{\comment}[1]{}
 
 \begin{document}
 
@@ -93,9 +97,11 @@ Quinn Perfetto - 104026025\\[3cm] % Your name
 \section{Introduction}
 
 A botnet is a private network of computers infected with malicious software which allows them to be controlled by an entity known as the \textbf{Command and Control (C\&C)}.
-The infected computers, referred to as \textbf{zombies}, are generally unaware that they are members of the botnet. 
+The infected computers, referred to as \textbf{zombies}, are generally unaware that they are members of the botnet.
 Botnets are most often used to send large quantities of spam emails and distribute denial of service attacks \cite{kapersky}.
 Botnets provide the C\&C with the computing power of all zombies in the network while masking the identity of the true attacker.
+In 2014 the Assistant Director of the FBI's Cyber Division presented an estimate stating that botnets have caused over
+\$110 billion in damage globally \cite{fbi}.
 \\ \\
 As an analogy, imagine that you send an email to your 10 closest friends falsely claiming that a local ice cream store
 is giving out free ice cream on a certain date.  Naturally these friends are excited and each of them forward this email
@@ -117,9 +123,31 @@ of people all while remaining anonymous.
 \end{center}
 
 \section{Motivation}
+It's hard to justify the motivation behind infecting thousands of computers to
+unwillingly act as ones personal army. Aside from deriving enjoyment from chaos,
+it seems as though these motivations fall into two categories.
+
 \subsection{Political}
+In 2007 a botnet targeted the essential electronic infrastructure of the Republic
+of Estonia \cite{estonia}. The attack brought down major banks, newspapers, and
+even telecom companies. The inciting incident occurred when the Estonian government
+removed a bronze statue from a city center built by the Soviets to commemorate those who died fighting
+the Nazis in World War II \cite{estonia}. This act upset some political activists, who quickly
+gained control of a botnet and unleashed it on the country.  Estonia remained under
+fire for exactly two weeks, after which the barrage of traffic abruptly stopped.
+This incident was the first of its kind, and revealed the unreasonable effectiveness
+of botnets being used for politically motivated attacks.
+
 \subsection{Economic}
-\subsection{Curiosity}
+To get an idea of how easy it is to purchase a botnet, a Google search for \quotes{\textit{botnets for sale}} garners 158,000 results.
+The first of which is a website titled \quotes{\textbf{Hack Forums - Botnets, IRC Bots, and Zombies}},
+where one can purchase pre-built botnets under a variety of different pricing schemes.
+Recently a botnet containing 100,000 zombies claiming to be able to produce
+1 terabit of traffic per second (enough bandwidth to make a relatively powerful server sweat)
+was seen for sale at \$7,500 \cite{forbessale}. This underground market willing
+to pay big money for powerful botnets provides a monetary incentive for the creators to make
+their software as intrusive as possible.  The more zombies a botnet has control
+of, the higher the price it will fetch.
 
 \section{Mechanics}
 
@@ -134,8 +162,8 @@ This property is attractive to botnet creators as it promotes rapid spreading of
 multiple hosts, and each new zombie adds an additional degree of separation from the source.
 The techniques used to infect the initial set of zombies are consistent with
 those used in general virus spreading.  These techniques may include social engineering,
-embedding the virus in email attachments, and \textit{something else}.
-Once a new zombie is infected it "phones home" to the C\&C to register
+embedding the virus in email attachments, and disguising the worm in phoney adware.
+Once a new zombie is infected it \quotes{phones home} to the C\&C to register
 itself as a member of the botnet, and then lays dormant awaiting a command
 \cite{topology}.
 
@@ -152,7 +180,7 @@ result it typically does not scale well with an increased number of zombies.
 
 \begin{center}
   \includegraphics[width=0.5\textwidth]{assets/startopo.png}
-  \captionof{figure}{A botnet with a star communication topology.}
+  \captionof{figure}{A botnet with a star communication topology}
   \label{fig:star_topo_fig}
 \end{center}
 
@@ -166,20 +194,20 @@ result it typically does not scale well with an increased number of zombies.
 \paragraph{Multiserver \cite{topology}}
 Multiple interconnected C\&C servers coordinate to distribute messages to the zombies.
 Thoughtful geographical placement of these C\&C servers can reduce latency across
-large distances.  This technique can be seen at the network core where each
-ISP provides internet connection to a small subset of the population, with support for
+large distances.  This technique can be seen at the global network core where each
+Internet Service Provider (ISP) provides internet connection to a small subset of the population, with support for
 inter-ISP communication accross long distances.
 
 \begin{center}
   \includegraphics[width=0.5\textwidth]{assets/multiservertopo.png}
-  \captionof{figure}{A botnet with a multiserver communication topology.}
+  \captionof{figure}{A botnet with a multiserver communication topology}
   \label{fig:mulitserver_topo_fig}
 \end{center}
 
 \begin{tabular}{p{8cm} | p{8cm}}
   \textbf{Pros} & \textbf{Cons} \\ \hline
-  \textbullet{}Reduced load on each C\&C                    & \textbullet{}Difficult Initial Setup \\
-  \textbullet{}Zombies can fail over incase of a C\&C crash & \textbullet{}Complicated Coordination\\
+  \textbullet{}Reduced load on each C\&C                    & \textbullet{}Difficult initial setup \\
+  \textbullet{}Zombies can fail over incase of a C\&C crash & \textbullet{}Complicated to coordinate\\
   \textbullet{}Optimized for long distance communication    & \\
 \end{tabular}
 
@@ -195,7 +223,7 @@ repository.
 
 \begin{center}
   \includegraphics[width=0.5\textwidth]{assets/p2ptopo.png}
-  \captionof{figure}{A botnet with a P2P communication topology.  Note the lack of explicit C\&C.}
+  \captionof{figure}{A botnet with a P2P communication topology.  Note the lack of explicit C\&C}
   \label{fig:p2p_topo_fig}
 \end{center}
 
@@ -207,17 +235,101 @@ repository.
 \end{tabular}
 
 \subsubsection{Attack}
+Once the botnet has been constructed and a communication infrastructure has been put into
+place, it can be used to carry out attacks.  As stated earlier, there are two
+main attack vectors utilized by botnets.
+
+\paragraph{Distributed Denial of Service Attacks (DDos)}
+DDoS attacks are among the least elegant of cyber attacks. Essentially, each
+zombie in the botnet is ordered to repeatedly send requests to a given server.
+The goal is to saturate the victim's server with requests to the point where it
+can no longer service legitimate users.  These types of attacks are particularly
+difficult to handle as the server cannot simply ignore requests from a single user,
+it must distinguish legitimate users from members of the botnet.
+This is a non-trivial task and is further discussed in section \ref{detection}.
+
+\paragraph{Sending of Spam Emails}
+Since sending thousands of emails from a single server/address is sure to raise a red flag
+in spam detection softwares, botnets are used to distribute the load.  Each zombie
+in the botnet is ordered to send a small subset of the desired emails. No single zombie
+is generating enough emails to seem suspicious, but collectively a massive amount
+of emails are being created. These emails typically contain paid-for advertisements
+and malware riddled attachments.
 
 \subsection{Techniques For Remaining Undetected}
-\subsubsection{P2P Command Propagation}
-\subsubsection{Encrypted Protocols}
+Aside from infecting as many hosts as possible, the main goal for botnet owners
+is to remain undetected.
 
-\section{Botnet Detection/Mitigation}
+\subsubsection{Encrypted Communication Protocols}
+To provide better security and help prevent other users from hijacking botnets,
+C\&C's can communicate with zombies (and vice versa) via encrypted protocols.
+Increasingly botnets are moving to encrypted HTTP based protocols instead of
+the once used plain text Internet Relay Chat (IRC) protocol \cite{botlab}.
+
+\subsubsection{Polymorphic Packers}
+Signature matching is a popular technique used in anti-virus software.  Once a new
+virus is discovered, a unique signature is generated by sampling sections of the
+binary content of the file. In order to stop anti-virus software from detecting
+zombie software this way, botnet creators use \textbf{polymorphic packers} \cite{botlab}.
+Polymorphic packers are able to construct two binary files which act identically, but will
+produce completely different signatures. In order to leverage this property, each
+time a zombie infects a new host it polymorphically repacks its binary file.  The result
+is thousands of different signatures for the same zombie software, making it virtually
+impossible for a signature based anti-virus to discern any kind of similarity.
+
+\subsubsection{Fast Flux Domain Name System (DNS)}
+Fast Flux is a technique which exploits the nature of DNS in order to hide illegal
+operations inside of a botnet \cite{fastflux}. To fully understand how Fast Flux works,
+some introductory knowledge on DNS is required.
+\\ \\
+\textbf{DNS} is a web protocol which, in a nutshell, provides name to address translation.
+When you attempt to visit \quotes{facebook.com}, your browser first makes a query to
+a DNS server to resolve the name \quotes{facebook.com} to an internet address which can
+be used to make a connection.  In this way \quotes{facebook.com} is simply a convenient
+alias for some longer (and harder to memorize) address. It is possible, and actually
+beneficial, that a single name may have multiple addresses associated with it. This phenomenon
+allows DNS servers to provide a basic type of load balancing between multiple servers.
+Finally, each DNS record (name to address pairing) also contains a field called
+the \textbf{time to live (TTL)}. This field indicates that the given record is only
+valid for some period of time, after which it should be invalidated and re-updated.
+\\ \\
+In order to take advantage of the dynamic nature of DNS records, botnet owners
+quickly cycle the address mapped to the name of an illegal website with that
+of members in the botnet \cite{fastflux}. These mappings are assigned an unusually low TTL
+(between 1 and 15 minutes), after which the address will be re-mapped to a
+different member of the botnet.  These members act as proxies, forwarding requests to other proxies,
+eventually leading to the actual server hosting the illegal content,
+dubbed the \textbf{mothership} \cite{fastflux}. Consequently the set of suspected
+hosts is in constant flux, leaving only one option to disrupt the malicious network:
+shutting down the offending domain name at the registrar level \cite{fastflux}.
+
+
+\section{Detecting Botnets Using Unsupervised Clustering}
+\label{detection}
+
+Unsupervised clustering is a common statistical analysis technique which partitions a set of unlabeled
+observations into subsets known as \textbf{clusters}.  These clusters are formed in
+such a way that observations within the
+same cluster are more similar to each other, by some similarity metric, than
+those in other clusters. A tool named BotMiner was developed in 2008 which examines
+activity on large networks and performs clustering on the hosts \cite{clustering}.
+The algorithm takes advantage of the fact that hosts belonging to a botnet will most
+likely exhibit similar behaviour, and therefore fall into the same cluster.
+To accomplish this, BotMiner uses two different similarity metrics: activity and
+communication \cite{clustering}.  Activity clustering groups hosts based on the
+types of activities they perform (e.g. port scanning, spamming, file downloading,
+etc.) \cite{clustering}.  Activity clustering provides a high level model of which
+hosts in the network are performing the same tasks, but does not contribute enough
+information to be conclusive.  To aid in developing a low level understanding
+of the network, communication clustering is also performed \cite{clustering}.
+Communication clustering determines similarity using attributes such as average
+number of bytes sent per connection, average number of connections per hour, etc.
+These two types of clusters are then intersected, resulting in the potential
+botnets \cite{clustering}.  What makes this approach significant is that
+it assumes nothing about the specific structure or communication protocols of
+the botnets in question, but relies only on their general nature.
 
 \section{Analysis of Historial Botnets}
-
-\subsection{The Morris Worm}
-First semblance of a botnet.  Changed the internet's outlook on security.
 
 \subsection{Conficker}
 
@@ -226,8 +338,13 @@ First semblance of a botnet.  Changed the internet's outlook on security.
 \subsection{Dyn DNS}
 Discuss problems with IoT.
 
+
+
+% Maybe drop this section?
 \section{Legal/Consenual Botnets}
 Research, lulz lazor, etc.
+
+\section{Conclusion}
 
 \pagebreak
 \begin{thebibliography}{1}
@@ -241,9 +358,27 @@ Research, lulz lazor, etc.
 
   \bibitem{malwareprop} MR Faghani {\em Malware Propagation in Online Social Networks} 2009:
   Proceedings of the 4th IEEE International Conference on Malicious and Unwanted Software.
-  
+
   \bibitem{topology} G Ollmann {\em Botnet Communication Topologies} 2009:
     \url{https://www.damballa.com/downloads/r_pubs/WP_Botnet_Communications_Primer.pdf}.
+
+  \bibitem{forbessale} T Fox-Brewster  {\em Hackers Sell \$7,500 IoT Cannon To Bring Down The Web Again} 2016:
+    forbes.com.
+
+  \bibitem{estonia} J Davis  {\em Hackers Take Down the Most Wired Country in Europe} 2007:
+    wired.com.
+
+  \bibitem{fbi} J Demarest {\em Taking Down Botnets} 2014:
+    Statement Before the Senate Judiciary Committee, Subcommittee on Crime and Terrorism.
+
+  \bibitem{botlab} JP John {\em Studying Spamming Botnets Using Botlab}  2009:
+    USENIX Symposium on Networked Systems Design and Implementation (NSDI).
+
+  \bibitem{fastflux} J Nazario {\em As the net churns: Fast-flux botnet observations}  2008:
+     Malicious and Unwanted Software, 2008. MALWARE 2008. 3rd International Conference.
+
+  \bibitem{clustering} G Gu {\em BotMiner: Clustering Analysis of Network Traffic for Protocol-and Structure-Independent Botnet Detection.}  2008:
+     USENIX Security Symposium, 2008.
 
 \end{thebibliography}
 
